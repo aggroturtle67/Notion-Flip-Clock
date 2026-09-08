@@ -6,10 +6,10 @@
 
 <style>
 :root {
-  --blau: #70889a;
-  --blau-dunkel: #5c7180;
-  --creme: #f6efe7;
-  --rosa: #c89aa5;
+  --blau: #102343;
+  --blau-dunkel: #102343;
+  --creme: #bd885d;
+  --rosa: #102343;
   --caramel: #bd885d;
 }
 
@@ -138,8 +138,7 @@ const weekText = document.getElementById("week");
 let firstUpdate = true;
 
 function isoWeek(year, month, day) {
-  const date = new Date(Date.UTC(year, month - 1, day));
-  const weekday = date.getUTCDay() || 7;
+  const date = new Date(Date.UTC(year, month - 1, day))
 
   date.setUTCDate(date.getUTCDate() + 4 - weekday);
 
