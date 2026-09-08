@@ -10,7 +10,7 @@
       --panel-top: #27375C;
       --panel-bottom: #27375C;
       --digits: #ffffff;
-      --caramel: #27375C;
+      --date-color: #27375C;
       --shadow: rgba(0, 0, 0, 0.34);
       --hinge: rgba(24, 29, 34, 0.62);
     }
@@ -31,7 +31,6 @@
     body {
       display: grid;
       place-items: center;
-      font-family: Georgia, "Times New Roman", serif;
     }
 
     .widget {
@@ -50,10 +49,8 @@
 
     .flip-card {
       position: relative;
-      display: flex;
-      flex-direction: column;
       width: clamp(112px, 34vw, 190px);
-      height: 1.16em;
+      height: clamp(86px, 20vw, 116px);
       color: var(--digits);
       font-family: "Helvetica Neue", Arial, sans-serif;
       font-size: clamp(58px, 16vw, 96px);
@@ -71,24 +68,40 @@
     .bottom-flip {
       position: absolute;
       left: 0;
-      display: flex;
-      justify-content: center;
       width: 100%;
-      height: 0.58em;
-      padding-right: 0.055em;
+      height: 50%;
       overflow: hidden;
       backface-visibility: hidden;
+    }
+
+    .top > span,
+    .bottom > span,
+    .top-flip > span,
+    .bottom-flip > span {
+      position: absolute;
+      left: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: clamp(86px, 20vw, 116px);
+      padding-right: 0.055em;
+    }
+
+    .top > span,
+    .top-flip > span {
+      top: 0;
+    }
+
+    .bottom > span,
+    .bottom-flip > span {
+      bottom: 0;
     }
 
     .top,
     .top-flip {
       top: 0;
-      align-items: flex-start;
-      background: linear-gradient(
-        180deg,
-        #7891a3 0%,
-        var(--panel-top) 100%
-      );
+      background: var(--panel-top);
       border-radius: 15px 15px 4px 4px;
       border-bottom: 1px solid var(--hinge);
     }
@@ -96,12 +109,7 @@
     .bottom,
     .bottom-flip {
       bottom: 0;
-      align-items: flex-end;
-      background: linear-gradient(
-        180deg,
-        var(--panel-bottom) 0%,
-        #5b707e 100%
-      );
+      background: var(--panel-bottom);
       border-radius: 4px 4px 15px 15px;
       border-top: 1px solid rgba(255, 255, 255, 0.08);
     }
@@ -109,15 +117,16 @@
     .top-flip {
       z-index: 2;
       transform-origin: bottom;
-      animation: fold-up 280ms cubic-bezier(0.37, 0, 0.63, 1) forwards;
+      animation: fold-up 280ms
+        cubic-bezier(0.37, 0, 0.63, 1) forwards;
     }
 
     .bottom-flip {
       z-index: 2;
       transform: rotateX(90deg);
       transform-origin: top;
-      animation:
-        fold-down 280ms cubic-bezier(0.37, 0, 0.63, 1)
+      animation: fold-down 280ms
+        cubic-bezier(0.37, 0, 0.63, 1)
         280ms forwards;
     }
 
@@ -127,11 +136,11 @@
       justify-content: center;
       gap: 12px;
       margin: clamp(18px, 5vw, 28px) 0 0;
-      color: var(--caramel);
+      color: var(--date-color);
       font-family: "Helvetica Neue", Arial, sans-serif;
       font-size: clamp(14px, 3.5vw, 18px);
       font-weight: 700;
-      letter-spacing: 0.14em;
+      letter-spacing: 0.12em;
       line-height: 1.35;
       text-transform: uppercase;
     }
@@ -188,26 +197,34 @@
         class="flip-card"
         id="hours-card"
         data-value="00"
-        aria-hidden="true"
       >
-        <div class="top">00</div>
-        <div class="bottom">00</div>
+        <div class="top">
+          <span>00</span>
+        </div>
+
+        <div class="bottom">
+          <span>00</span>
+        </div>
       </div>
 
       <div
         class="flip-card"
         id="minutes-card"
         data-value="00"
-        aria-hidden="true"
       >
-        <div class="top">00</div>
-        <div class="bottom">00</div>
+        <div class="top">
+          <span>00</span>
+        </div>
+
+        <div class="bottom">
+          <span>00</span>
+        </div>
       </div>
 
     </div>
 
     <p class="date-row">
-      <span id="today">08/09</span>
+      <span id="today">08. September</span>
       <span class="date-separator">·</span>
       <span id="week">KW 37</span>
     </p>
@@ -281,10 +298,10 @@
     function setCardImmediately(card, value) {
       card.dataset.value = value;
 
-      card.querySelector(".top").textContent =
+      card.querySelector(".top span").textContent =
         value;
 
-      card.querySelector(".bottom").textContent =
+      card.querySelector(".bottom span").textContent =
         value;
     }
 
@@ -301,14 +318,16 @@
       }
 
       card
-        .querySelectorAll(".top-flip, .bottom-flip")
+        .querySelectorAll(
+          ".top-flip, .bottom-flip"
+        )
         .forEach((part) => part.remove());
 
       const top =
-        card.querySelector(".top");
+        card.querySelector(".top span");
 
       const bottom =
-        card.querySelector(".bottom");
+        card.querySelector(".bottom span");
 
       const topFlip =
         document.createElement("div");
@@ -316,11 +335,20 @@
       const bottomFlip =
         document.createElement("div");
 
+      const topFlipText =
+        document.createElement("span");
+
+      const bottomFlipText =
+        document.createElement("span");
+
       topFlip.className = "top-flip";
       bottomFlip.className = "bottom-flip";
 
-      topFlip.textContent = previous;
-      bottomFlip.textContent = value;
+      topFlipText.textContent = previous;
+      bottomFlipText.textContent = value;
+
+      topFlip.append(topFlipText);
+      bottomFlip.append(bottomFlipText);
 
       card.dataset.value = value;
 
@@ -359,6 +387,12 @@
         Number(parts.day)
       );
 
+      const monthName =
+        new Intl.DateTimeFormat("de-DE", {
+          timeZone: TIME_ZONE,
+          month: "long"
+        }).format(now);
+
       flipTo(
         hoursCard,
         parts.hour.padStart(2, "0")
@@ -370,7 +404,7 @@
       );
 
       today.textContent =
-        `${parts.day}/${parts.month}`;
+        `${parts.day}. ${monthName}`;
 
       week.textContent =
         `KW ${calendarWeek}`;
